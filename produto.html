@@ -330,7 +330,39 @@
                 reader.readAsDataURL(file);
             }
         });
+        function salvarImagem() {
+    const imagemSrc = document.getElementById('imagemPreview').src;
+    
+    // Se houver uma imagem e for um Data URL
+    if (imagemSrc && imagemSrc.startsWith('data:')) {
+        // Gerar nome de arquivo único para a imagem
+        const editandoId = document.getElementById('editandoProdutoId')?.value;
+        const id = editandoId || Date.now().toString();
+        const imagemNome = `produto_${id}_imagem`;
         
+        // Salvar a imagem no localStorage
+        try {
+            localStorage.setItem(imagemNome, imagemSrc);
+        } catch (e) {
+            console.error('Erro ao salvar imagem (pode ser muito grande para localStorage):', e);
+            alert('Aviso: A imagem pode ser muito grande para armazenamento local.');
+        }
+        
+        return imagemNome;
+    }
+    
+    // Se já existe um produto em edição, mantemos o nome da imagem atual
+    const editandoId = document.getElementById('editandoProdutoId')?.value;
+    if (editandoId) {
+        const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+        const produtoAtual = produtos.find(p => p.id === editandoId);
+        if (produtoAtual && produtoAtual.imagemNome) {
+            return produtoAtual.imagemNome;
+        }
+    }
+    
+    return '';
+}
         // Atualizar ângulos quando a quantidade de lados mudar
         document.getElementById('qtdLados').addEventListener('input', atualizarAngulos);
         
