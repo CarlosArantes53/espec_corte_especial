@@ -52,6 +52,11 @@
             font-size: 16px;
         }
         
+        input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
         .notification {
             padding: 15px;
             background-color: #2ecc71;
@@ -126,7 +131,15 @@
             border: 1px solid #eee;
         }
         
-        .medidas-container h4, .angulos-container h4 {
+        .calculos-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+        
+        .medidas-container h4, .angulos-container h4, .calculos-container h4 {
             margin-top: 0;
             color: #333;
         }
@@ -268,6 +281,24 @@
                     <div id="angulos-container" class="inputs-grid">
                     </div>
                 </div>
+                
+                <div id="produtoCalculos" class="calculos-container">
+                    <h4>Cálculos:</h4>
+                    <div class="inputs-grid">
+                        <div>
+                            <label class="input-label" for="desenvolvimento">Desenvolvimento (mm):</label>
+                            <input type="number" id="desenvolvimento" readonly>
+                        </div>
+                        <div>
+                            <label class="input-label" for="comprimento">Comprimento (mm):</label>
+                            <input type="number" id="comprimento" value="0" min="0" step="0.1">
+                        </div>
+                        <div>
+                            <label class="input-label" for="peso">Peso (kg):</label>
+                            <input type="number" id="peso" readonly>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="form-group" id="formSelecao" style="display: none;">
@@ -377,6 +408,7 @@
                     input.value = 0;
                     input.min = 0;
                     input.step = 0.1;
+                    input.addEventListener('input', calcularDesenvolvimento);
                     
                     div.appendChild(label);
                     div.appendChild(input);
@@ -420,8 +452,47 @@
                     document.getElementById('produtoImagem').src = '/api/placeholder/200/200';
                 }
                 
+                // Inicializar valores dos campos de cálculo
+                calcularDesenvolvimento();
+                
+                // Adicionar evento para recalcular o peso quando o comprimento mudar
+                document.getElementById('comprimento').addEventListener('input', calcularPeso);
+                
                 document.getElementById('produtoInfo').style.display = 'block';
             }
+        }
+        
+        function calcularDesenvolvimento() {
+            const qtdLados = parseInt(document.getElementById('produtoLados').textContent);
+            let somaLados = 0;
+            
+            for (let i = 1; i <= qtdLados; i++) {
+                somaLados += parseFloat(document.getElementById(`lado-${i}`).value) || 0;
+            }
+            
+            // Fórmula: desenvolvimento = somaLados - (2 * qtdLados)
+            const desenvolvimento = somaLados - (2 * qtdLados);
+            document.getElementById('desenvolvimento').value = desenvolvimento.toFixed(2);
+            
+            // Recalcular o peso sempre que o desenvolvimento mudar
+            calcularPeso();
+        }
+        
+        function calcularPeso() {
+            const desenvolvimento = parseFloat(document.getElementById('desenvolvimento').value) || 0;
+            const comprimento = parseFloat(document.getElementById('comprimento').value) || 0;
+            let espessura = 0;
+            
+            // Obter o valor da espessura selecionada
+            const espessuraIndex = document.getElementById('espessuraSelecionada').value;
+            if (espessuraIndex !== '') {
+                const espessuras = JSON.parse(localStorage.getItem('espessuras') || '[]');
+                espessura = parseFloat(espessuras[espessuraIndex].valor) || 0;
+            }
+            
+            // Fórmula: peso = desenvolvimento * comprimento * espessura * 0.0000785
+            const peso = desenvolvimento * comprimento * espessura * 0.00000785;
+            document.getElementById('peso').value = peso.toFixed(3);
         }
         
         function carregarEspessuras() {
@@ -436,6 +507,9 @@
                 option.textContent = `${espessura.descricao} (${espessura.valor}mm)`;
                 selectEspessuras.appendChild(option);
             });
+            
+            // Adicionar evento para recalcular o peso quando a espessura for alterada
+            selectEspessuras.addEventListener('change', calcularPeso);
         }
         
         function carregarQualidades() {
@@ -481,6 +555,9 @@
             document.getElementById('qualidadeSelecionada').value = '';
             document.getElementById('qtdPecas').value = '1';
             document.getElementById('observacoes').value = '';
+            document.getElementById('comprimento').value = '0';
+            calcularDesenvolvimento();
+            calcularPeso();
         }
         
         document.getElementById('btnSalvarSelecao').addEventListener('click', function() {
@@ -489,8 +566,11 @@
             const qualidadeIndex = document.getElementById('qualidadeSelecionada').value;
             const qtdPecas = document.getElementById('qtdPecas').value;
             const observacoes = document.getElementById('observacoes').value;
+            const desenvolvimento = document.getElementById('desenvolvimento').value;
+            const comprimento = document.getElementById('comprimento').value;
+            const peso = document.getElementById('peso').value;
             
-            if (!produtoId || espessuraIndex === '' || qualidadeIndex === '' || !qtdPecas) {
+            if (!produtoId || espessuraIndex === '' || qualidadeIndex === '' || !qtdPecas || !comprimento) {
                 alert('Por favor, preencha todos os campos obrigatórios.');
                 return;
             }
@@ -519,6 +599,9 @@
                 qualidadeDescricao: `${qualidade.descricao} (${qualidade.codigo})`,
                 qtdPecas: parseInt(qtdPecas),
                 observacoes: observacoes,
+                desenvolvimento: parseFloat(desenvolvimento),
+                comprimento: parseFloat(comprimento),
+                peso: parseFloat(peso),
                 dataCriacao: new Date().toISOString()
             };
             
