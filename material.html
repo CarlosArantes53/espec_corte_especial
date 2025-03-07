@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Materiais</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-add {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-add:hover {
+            background-color: #27ae60;
+        }
+        
+        .notification {
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-top: 3px solid #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .action-cell {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Materiais</h1>
+        
+        <div class="notification" id="notification">
+            Dados salvos com sucesso!
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="espessuras">Espessuras</div>
+            <div class="tab" data-tab="qualidades">Qualidade do Material</div>
+        </div>
+        
+        <div class="form-container">
+            <!-- Tab Espessuras -->
+            <div class="tab-content active" id="espessuras-tab">
+                <h2>Espessuras</h2>
+                
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" id="descricaoEspessura" placeholder="Descrição da espessura">
+                        <input type="number" id="valorEspessura" placeholder="Valor (mm)" step="0.1" min="0">
+                        <button id="btnAdicionarEspessura" class="btn btn-add">Adicionar</button>
+                    </div>
+                </div>
+                
+                <table id="tabelaEspessuras">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor (mm)</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Linhas serão adicionadas dinamicamente -->
+                    </tbody>
+                </table>
+                
+                <div class="buttons">
+                    <a href="index.html" class="btn btn-secondary">Voltar</a>
+                    <button id="btnSalvarEspessuras" class="btn btn-primary">Salvar Espessuras</button>
+                </div>
+            </div>
+            
+            <!-- Tab Qualidade do Material -->
+            <div class="tab-content" id="qualidades-tab">
+                <h2>Qualidade do Material</h2>
+                
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" id="descricaoQualidade" placeholder="Descrição da qualidade">
+                        <input type="text" id="codigoQualidade" placeholder="Código da qualidade">
+                        <button id="btnAdicionarQualidade" class="btn btn-add">Adicionar</button>
+                    </div>
+                </div>
+                
+                <table id="tabelaQualidades">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Código</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Linhas serão adicionadas dinamicamente -->
+                    </tbody>
+                </table>
+                
+                <div class="buttons">
+                    <a href="index.html" class="btn btn-secondary">Voltar</a>
+                    <button id="btnSalvarQualidades" class="btn btn-primary">Salvar Qualidades</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Arrays para armazenar os dados
+        let espessuras = JSON.parse(localStorage.getItem('espessuras') || '[]');
+        let qualidades = JSON.parse(localStorage.getItem('qualidades') || '[]');
+        
+        // Função para alternar entre as abas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remover classe active de todas as abas
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Adicionar classe active na aba clicada
+                this.classList.add('active');
+                document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+        
+        // Função para adicionar espessura
+        document.getElementById('btnAdicionarEspessura').addEventListener('click', function() {
+            const descricao = document.getElementById('descricaoEspessura').value;
+            const valor = document.getElementById('valorEspessura').value;
+            
+            if (descricao && valor) {
+                espessuras.push({ descricao, valor });
+                atualizarTabelaEspessuras();
+                
+                // Limpar campos
+                document.getElementById('descricaoEspessura').value = '';
+                document.getElementById('valorEspessura').value = '';
+            }
+        });
+        
+        // Função para adicionar qualidade
+        document.getElementById('btnAdicionarQualidade').addEventListener('click', function() {
+            const descricao = document.getElementById('descricaoQualidade').value;
+            const codigo = document.getElementById('codigoQualidade').value;
+            
+            if (descricao && codigo) {
+                qualidades.push({ descricao, codigo });
+                atualizarTabelaQualidades();
+                
+                // Limpar campos
+                document.getElementById('descricaoQualidade').value = '';
+                document.getElementById('codigoQualidade').value = '';
+            }
+        });
+        
+        // Função para atualizar tabela de espessuras
+        function atualizarTabelaEspessuras() {
+            const tabela = document.getElementById('tabelaEspessuras').getElementsByTagName('tbody')[0];
+            tabela.innerHTML = '';
+            
+            espessuras.forEach((item, index) => {
+                const row = tabela.insertRow();
+                
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                
+                cell1.textContent = item.descricao;
+                cell2.textContent = item.valor;
+                cell3.className = 'action-cell';
+                cell3.innerHTML = `<button class="btn btn-danger" onclick="removerEspessura(${index})">Remover</button>`;
+            });
+        }
+        
+        // Função para atualizar tabela de qualidades
+        function atualizarTabelaQualidades() {
+            const tabela = document.getElementById('tabelaQualidades').getElementsByTagName('tbody')[0];
+            tabela.innerHTML = '';
+            
+            qualidades.forEach((item, index) => {
+                const row = tabela.insertRow();
+                
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                
+                cell1.textContent = item.descricao;
+                cell2.textContent = item.codigo;
+                cell3.className = 'action-cell';
+                cell3.innerHTML = `<button class="btn btn-danger" onclick="removerQualidade(${index})">Remover</button>`;
+            });
+        }
+        
+        // Função para remover espessura
+        window.removerEspessura = function(index) {
+            espessuras.splice(index, 1);
+            atualizarTabelaEspessuras();
+        };
+        
+        // Função para remover qualidade
+        window.removerQualidade = function(index) {
+            qualidades.splice(index, 1);
+            atualizarTabelaQualidades();
+        };
+        
+        // Funções de exportação JSON removidas
+        
+        // Função para salvar espessuras
+        document.getElementById('btnSalvarEspessuras').addEventListener('click', function() {
+            // Salvar no localStorage
+            localStorage.setItem('espessuras', JSON.stringify(espessuras));
+            
+            // Mostrar notificação
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            notification.textContent = 'Espessuras salvas com sucesso!';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        });
+        
+        // Função para salvar qualidades
+        document.getElementById('btnSalvarQualidades').addEventListener('click', function() {
+            // Salvar no localStorage
+            localStorage.setItem('qualidades', JSON.stringify(qualidades));
+            
+            // Mostrar notificação
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            notification.textContent = 'Qualidades salvas com sucesso!';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        });
+        
+        // Inicializar tabelas
+        atualizarTabelaEspessuras();
+        atualizarTabelaQualidades();
+    </script>
+</body>
+</html>

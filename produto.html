@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produtos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        input[type="file"] {
+            padding: 10px 0;
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .range-value {
+            min-width: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        
+        .hide {
+            display: none;
+        }
+        
+        .notification {
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Produtos</h1>
+        
+        <div class="notification" id="notification">
+            Produto salvo com sucesso!
+        </div>
+        
+        <div class="form-group">
+            <label for="listaProdutos">Produtos Cadastrados:</label>
+            <select id="listaProdutos" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+                <option value="">-- Selecione um produto para editar --</option>
+            </select>
+        </div>
+        
+        <div class="form-container">
+            <div class="form-group">
+                <label for="imagem">Imagem do Produto:</label>
+                <input type="file" id="imagem" accept="image/*">
+                <img id="imagemPreview" class="image-preview" src="#" alt="Preview da imagem">
+            </div>
+            
+            <div class="form-group">
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" rows="4" placeholder="Digite a descrição do produto"></textarea>
+            </div>
+            
+
+            
+            <div class="form-group">
+                <label for="qtdLados">Quantidade de Lados (1-12):</label>
+                <div class="range-container">
+                    <input type="range" id="qtdLados" min="1" max="12" value="3">
+                    <span class="range-value" id="qtdLadosValue">3</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Ângulos (Quantidade de lados - 1):</label>
+                <div id="qtdAngulosInfo">Número de ângulos: 2</div>
+                <table id="tabelaAngulos">
+                    <thead>
+                        <tr>
+                            <th>Número do Ângulo</th>
+                            <th>Valor Padrão (graus)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ângulo 1</td>
+                            <td><input type="number" value="90" min="0" max="360"></td>
+                        </tr>
+                        <tr>
+                            <td>Ângulo 2</td>
+                            <td><input type="number" value="90" min="0" max="360"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="buttons">
+                <a href="index.html" class="btn btn-secondary">Voltar</a>
+                <button id="btnSalvar" class="btn btn-primary">Salvar Produto</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Elemento oculto para armazenar o ID do produto em edição
+        const editandoProdutoId = document.createElement('input');
+        editandoProdutoId.type = 'hidden';
+        editandoProdutoId.id = 'editandoProdutoId';
+        document.body.appendChild(editandoProdutoId);
+        
+        // Função para carregar a lista de produtos
+        function atualizarListaProdutos() {
+            const selectProdutos = document.getElementById('listaProdutos');
+            const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+            
+            // Manter apenas a primeira opção (vazia)
+            selectProdutos.innerHTML = '<option value="">-- Selecione um produto para editar --</option>';
+            
+            // Adicionar cada produto como uma opção
+            produtos.forEach(produto => {
+                const option = document.createElement('option');
+                option.value = produto.id;
+                option.textContent = produto.descricao || `Produto ${produto.id}`;
+                selectProdutos.appendChild(option);
+            });
+        }
+        
+        // Função para carregar produto para edição
+        document.getElementById('listaProdutos').addEventListener('change', function() {
+            const produtoId = this.value;
+            if (!produtoId) return;
+            
+            const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+            const produto = produtos.find(p => p.id === produtoId);
+            
+            if (produto) {
+                // Preencher os campos com os dados do produto
+                document.getElementById('descricao').value = produto.descricao || '';
+                document.getElementById('qtdLados').value = produto.qtdLados || 3;
+                
+                // Atualizar a tabela de ângulos
+                atualizarAngulos();
+                
+                // Preencher os valores dos ângulos
+                const linhasTabela = document.getElementById('tabelaAngulos').getElementsByTagName('tbody')[0].rows;
+                produto.angulos.forEach((valor, index) => {
+                    if (linhasTabela[index]) {
+                        linhasTabela[index].cells[1].getElementsByTagName('input')[0].value = valor;
+                    }
+                });
+                
+                // Para protótipo: Se houver nome de imagem, tentamos carregar do localStorage
+                if (produto.imagemNome) {
+                    const imagemSalva = localStorage.getItem(produto.imagemNome);
+                    if (imagemSalva) {
+                        document.getElementById('imagemPreview').src = imagemSalva;
+                        document.getElementById('imagemPreview').style.display = 'block';
+                    } else {
+                        // Caso não encontre a imagem, mostramos um placeholder
+                        const msg = document.createElement('p');
+                        msg.innerHTML = `<small>Imagem não encontrada: <strong>${produto.imagemNome}</strong><br>Selecione o arquivo novamente para visualizar</small>`;
+                        msg.id = 'imagemMsg';
+                        
+                        // Remover mensagem anterior se existir
+                        const msgAnterior = document.getElementById('imagemMsg');
+                        if (msgAnterior) msgAnterior.remove();
+                        
+                        // Adicionar mensagem após o preview
+                        const previewEl = document.getElementById('imagemPreview');
+                        previewEl.parentNode.insertBefore(msg, previewEl.nextSibling);
+                    }
+                }
+                
+                // Guardar o ID do produto em edição
+                document.getElementById('editandoProdutoId').value = produtoId;
+                document.getElementById('btnSalvar').textContent = 'Atualizar Produto';
+            }
+        });
+        
+        // Função para atualizar a quantidade de ângulos com base na quantidade de lados
+        function atualizarAngulos() {
+            const qtdLados = parseInt(document.getElementById('qtdLados').value);
+            const qtdAngulos = qtdLados - 1;
+            document.getElementById('qtdLadosValue').textContent = qtdLados;
+            document.getElementById('qtdAngulosInfo').textContent = `Número de ângulos: ${qtdAngulos}`;
+            
+            // Atualizar tabela de ângulos
+            const tabela = document.getElementById('tabelaAngulos').getElementsByTagName('tbody')[0];
+            tabela.innerHTML = '';
+            
+            for (let i = 1; i <= qtdAngulos; i++) {
+                const row = tabela.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                
+                cell1.textContent = `Ângulo ${i}`;
+                cell2.innerHTML = `<input type="number" value="90" min="0" max="360">`;
+            }
+        }
+        
+        // Preview da imagem
+        document.getElementById('imagem').addEventListener('change', function(e) {
+            const imagemPreview = document.getElementById('imagemPreview');
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagemPreview.src = e.target.result;
+                    imagemPreview.style.display = 'block';
+                    
+                    // Armazenar imagem em cache para o produto em edição
+                    const editandoId = document.getElementById('editandoProdutoId').value;
+                    if (editandoId) {
+                        sessionStorage.setItem(`imagem_${editandoId}`, e.target.result);
+                    }
+                    
+                    // Remover mensagem de imagem se existir
+                    const msgImagem = document.getElementById('imagemMsg');
+                    if (msgImagem) msgImagem.remove();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Atualizar ângulos quando a quantidade de lados mudar
+        document.getElementById('qtdLados').addEventListener('input', atualizarAngulos);
+        
+        // Salvar produto
+        document.getElementById('btnSalvar').addEventListener('click', function() {
+            // Coletar valores dos ângulos
+            const angulos = [];
+            const linhasTabela = document.getElementById('tabelaAngulos').getElementsByTagName('tbody')[0].rows;
+            
+            for (let i = 0; i < linhasTabela.length; i++) {
+                const valorAngulo = linhasTabela[i].cells[1].getElementsByTagName('input')[0].value;
+                angulos.push(parseInt(valorAngulo));
+            }
+            
+            // Processar imagem se necessário
+            const imagemNome = salvarImagem();
+            
+            // Criar objeto do produto
+            const produto = {
+                id: document.getElementById('editandoProdutoId')?.value || Date.now().toString(),
+                descricao: document.getElementById('descricao').value,
+                qtdLados: parseInt(document.getElementById('qtdLados').value),
+                qtdAngulos: parseInt(document.getElementById('qtdLados').value) - 1,
+                angulos: angulos,
+                imagemNome: imagemNome // Armazenar apenas o nome do arquivo
+            };
+            
+            // Obter produtos já salvos no localStorage
+            let produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+            
+            // Verificar se está editando um produto existente
+            const editandoId = document.getElementById('editandoProdutoId')?.value;
+            
+            if (editandoId) {
+                // Atualizar produto existente
+                const index = produtos.findIndex(p => p.id === editandoId);
+                if (index !== -1) {
+                    produto.id = editandoId; // Manter o mesmo ID
+                    produtos[index] = produto;
+                }
+            } else {
+                // Adicionar novo produto
+                produtos.push(produto);
+            }
+            
+            // Salvar no localStorage
+            localStorage.setItem('produtos', JSON.stringify(produtos));
+            
+            // Salvar em arquivo JSON (simulação para protótipo)
+            const produtosJSON = JSON.stringify(produtos, null, 2);
+            const blob = new Blob([produtosJSON], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'produtos.json';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Atualizar a lista de produtos
+            atualizarListaProdutos();
+            
+            // Salvar no localStorage
+            localStorage.setItem('produtos', JSON.stringify(produtos));
+            
+            // Mostrar notificação
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            notification.textContent = editandoId ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+            
+            // Limpar formulário se não estiver editando
+            if (!editandoId) {
+                document.getElementById('descricao').value = '';
+                document.getElementById('imagemPreview').src = '#';
+                document.getElementById('imagemPreview').style.display = 'none';
+                document.getElementById('editandoProdutoId').value = '';
+                document.getElementById('btnSalvar').textContent = 'Salvar Produto';
+            }
+        });
+        
+        // Inicializar a tabela de ângulos
+        atualizarAngulos();
+        
+        // Carregar lista de produtos
+        atualizarListaProdutos();
+    </script>
+</body>
+</html>

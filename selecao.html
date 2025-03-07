@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Produtos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .notification {
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .product-info {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .product-info h3 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .product-header {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .product-details {
+            flex: 2;
+            min-width: 250px;
+        }
+        
+        .product-image-container {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .product-image {
+            max-width: 200px;
+            max-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 10px 0 20px 0;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #555;
+        }
+        
+        .medidas-container, .angulos-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+        
+        .medidas-container h4, .angulos-container h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .selection-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .selection-column {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .selecoes-lista {
+            margin-top: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .selecoes-lista h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .action-cell {
+            text-align: center;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Seleção de Produtos</h1>
+        
+        <div class="notification" id="notification">
+            Seleção salva com sucesso!
+        </div>
+        
+        <div class="form-container">
+            <div class="form-group">
+                <label for="produtoSelecionado">Selecione um Produto:</label>
+                <select id="produtoSelecionado">
+                    <option value="">-- Selecione um produto --</option>
+                </select>
+            </div>
+            
+            <div class="product-info" id="produtoInfo">
+                <div class="product-header">
+                    <div class="product-details">
+                        <h3>Informações do Produto</h3>
+                        <p><strong>Descrição:</strong> <span id="produtoDescricao"></span></p>
+                        <p><strong>Quantidade de Lados:</strong> <span id="produtoLados"></span></p>
+                        <p><strong>Quantidade de Ângulos:</strong> <span id="produtoAngulos"></span></p>
+                    </div>
+                    <div class="product-image-container">
+                        <img id="produtoImagem" class="product-image" src="#" alt="Imagem do produto">
+                    </div>
+                </div>
+                
+                <div id="produtoMedidas" class="medidas-container">
+                    <h4>Medidas dos Lados (mm):</h4>
+                    <div id="lados-container" class="inputs-grid">
+                    </div>
+                </div>
+                
+                <div id="produtoAngulosInfo" class="angulos-container">
+                    <h4>Valores dos Ângulos (graus):</h4>
+                    <div id="angulos-container" class="inputs-grid">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="formSelecao" style="display: none;">
+                <h3>Informações Adicionais</h3>
+                
+                <div class="selection-details">
+                    <div class="selection-column">
+                        <div class="form-group">
+                            <label for="espessuraSelecionada">Espessura:</label>
+                            <select id="espessuraSelecionada">
+                                <option value="">-- Selecione uma espessura --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="qualidadeSelecionada">Qualidade do Material:</label>
+                            <select id="qualidadeSelecionada">
+                                <option value="">-- Selecione uma qualidade --</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="selection-column">
+                        <div class="form-group">
+                            <label for="qtdPecas">Quantidade de Peças:</label>
+                            <input type="number" id="qtdPecas" min="1" value="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="observacoes">Observações:</label>
+                            <textarea id="observacoes" rows="4" placeholder="Observações adicionais sobre a seleção"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+                    <button id="btnSalvarSelecao" class="btn btn-primary">Salvar Seleção</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons" style="margin-top: 20px; text-align: center;">
+            <a href="index.html" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+    
+    <script>
+        let selecoes = JSON.parse(localStorage.getItem('selecoes') || '[]');
+        
+        window.onload = function() {
+            carregarProdutos();
+            carregarEspessuras();
+            carregarQualidades();
+        };
+        
+        function carregarProdutos() {
+            const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+            const selectProdutos = document.getElementById('produtoSelecionado');
+            
+            selectProdutos.innerHTML = '<option value="">-- Selecione um produto --</option>';
+            
+            produtos.forEach(produto => {
+                const option = document.createElement('option');
+                option.value = produto.id;
+                option.textContent = produto.descricao || `Produto ${produto.id}`;
+                selectProdutos.appendChild(option);
+            });
+            
+            selectProdutos.addEventListener('change', function() {
+                const produtoId = this.value;
+                if (produtoId) {
+                    carregarInfoProduto(produtoId);
+                    document.getElementById('formSelecao').style.display = 'block';
+                } else {
+                    document.getElementById('produtoInfo').style.display = 'none';
+                    document.getElementById('formSelecao').style.display = 'none';
+                }
+            });
+        }
+        
+        function carregarInfoProduto(produtoId) {
+            const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+            const produto = produtos.find(p => p.id === produtoId);
+            
+            if (produto) {
+                document.getElementById('produtoDescricao').textContent = produto.descricao;
+                document.getElementById('produtoLados').textContent = produto.qtdLados;
+                document.getElementById('produtoAngulos').textContent = produto.qtdAngulos;
+                
+                const ladosContainer = document.getElementById('lados-container');
+                ladosContainer.innerHTML = '';
+                
+                for (let i = 1; i <= produto.qtdLados; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'lado-input';
+                    
+                    const label = document.createElement('label');
+                    label.className = 'input-label';
+                    label.textContent = `Lado ${i}:`;
+                    label.htmlFor = `lado-${i}`;
+                    
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = `lado-${i}`;
+                    input.className = 'medida-input';
+                    input.value = 0;
+                    input.min = 0;
+                    input.step = 0.1;
+                    
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    ladosContainer.appendChild(div);
+                }
+                
+                const angulosContainer = document.getElementById('angulos-container');
+                angulosContainer.innerHTML = '';
+                
+                produto.angulos.forEach((angulo, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'angulo-input';
+                    
+                    const label = document.createElement('label');
+                    label.className = 'input-label';
+                    label.textContent = `Ângulo ${index + 1}:`;
+                    label.htmlFor = `angulo-${index + 1}`;
+                    
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = `angulo-${index + 1}`;
+                    input.className = 'angulo-input';
+                    input.value = angulo;
+                    input.min = 0;
+                    input.max = 360;
+                    input.step = 0.1;
+                    
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    angulosContainer.appendChild(div);
+                });
+                
+                if (produto.imagemNome) {
+                    const imagemSalva = localStorage.getItem(produto.imagemNome);
+                    if (imagemSalva) {
+                        document.getElementById('produtoImagem').src = imagemSalva;
+                    } else {
+                        document.getElementById('produtoImagem').src = '/api/placeholder/200/200';
+                    }
+                } else {
+                    document.getElementById('produtoImagem').src = '/api/placeholder/200/200';
+                }
+                
+                document.getElementById('produtoInfo').style.display = 'block';
+            }
+        }
+        
+        function carregarEspessuras() {
+            const espessuras = JSON.parse(localStorage.getItem('espessuras') || '[]');
+            const selectEspessuras = document.getElementById('espessuraSelecionada');
+            
+            selectEspessuras.innerHTML = '<option value="">-- Selecione uma espessura --</option>';
+            
+            espessuras.forEach((espessura, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${espessura.descricao} (${espessura.valor}mm)`;
+                selectEspessuras.appendChild(option);
+            });
+        }
+        
+        function carregarQualidades() {
+            const qualidades = JSON.parse(localStorage.getItem('qualidades') || '[]');
+            const selectQualidades = document.getElementById('qualidadeSelecionada');
+            
+            selectQualidades.innerHTML = '<option value="">-- Selecione uma qualidade --</option>';
+            
+            qualidades.forEach((qualidade, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${qualidade.descricao} (${qualidade.codigo})`;
+                selectQualidades.appendChild(option);
+            });
+        }
+        
+        function obterMedidasDosLados() {
+            const qtdLados = parseInt(document.getElementById('produtoLados').textContent);
+            const medidas = [];
+            
+            for (let i = 1; i <= qtdLados; i++) {
+                const valor = parseFloat(document.getElementById(`lado-${i}`).value) || 0;
+                medidas.push(valor);
+            }
+            
+            return medidas;
+        }
+        
+        function obterValoresDosAngulos() {
+            const qtdAngulos = parseInt(document.getElementById('produtoAngulos').textContent);
+            const angulos = [];
+            
+            for (let i = 1; i <= qtdAngulos; i++) {
+                const valor = parseFloat(document.getElementById(`angulo-${i}`).value) || 0;
+                angulos.push(valor);
+            }
+            
+            return angulos;
+        }
+        
+        function limparFormulario() {
+            document.getElementById('espessuraSelecionada').value = '';
+            document.getElementById('qualidadeSelecionada').value = '';
+            document.getElementById('qtdPecas').value = '1';
+            document.getElementById('observacoes').value = '';
+        }
+        
+        document.getElementById('btnSalvarSelecao').addEventListener('click', function() {
+            const produtoId = document.getElementById('produtoSelecionado').value;
+            const espessuraIndex = document.getElementById('espessuraSelecionada').value;
+            const qualidadeIndex = document.getElementById('qualidadeSelecionada').value;
+            const qtdPecas = document.getElementById('qtdPecas').value;
+            const observacoes = document.getElementById('observacoes').value;
+            
+            if (!produtoId || espessuraIndex === '' || qualidadeIndex === '' || !qtdPecas) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+            const produto = produtos.find(p => p.id === produtoId);
+            
+            const espessuras = JSON.parse(localStorage.getItem('espessuras') || '[]');
+            const espessura = espessuras[espessuraIndex];
+            
+            const qualidades = JSON.parse(localStorage.getItem('qualidades') || '[]');
+            const qualidade = qualidades[qualidadeIndex];
+            
+            const medidas = obterMedidasDosLados();
+            const angulos = obterValoresDosAngulos();
+            
+            const selecao = {
+                id: Date.now().toString(),
+                produtoId: produtoId,
+                produtoDescricao: produto.descricao,
+                medidas: medidas,
+                angulos: angulos,
+                espessuraIndex: espessuraIndex,
+                espessuraDescricao: `${espessura.descricao} (${espessura.valor}mm)`,
+                qualidadeIndex: qualidadeIndex,
+                qualidadeDescricao: `${qualidade.descricao} (${qualidade.codigo})`,
+                qtdPecas: parseInt(qtdPecas),
+                observacoes: observacoes,
+                dataCriacao: new Date().toISOString()
+            };
+            
+            selecoes.push(selecao);
+            localStorage.setItem('selecoes', JSON.stringify(selecoes));
+            
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+            
+            limparFormulario();
+        });
+    </script>
+</body>
+</html>

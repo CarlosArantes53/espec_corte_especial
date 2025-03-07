@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cadastro - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            height: 60px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .info-panel {
+            background-color: #e8f4f8; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px;
+        }
+        
+        .info-panel h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de corte especial</h1>
+        <div class="card-container">
+            <div class="card">
+                <h2>Cadastro de Produtos</h2>
+                <p>Gerencie o cadastro de produtos com imagens, descrições e ângulos.</p>
+                <a href="produto.html" class="btn">Acessar</a>
+            </div>
+            
+            <div class="card">
+                <h2>Cadastro de Materiais</h2>
+                <p>Gerencie espessuras e qualidade de materiais em um formato tabular.</p>
+                <a href="material.html" class="btn">Acessar</a>
+            </div>
+            
+            <div class="card">
+                <h2>Seleção de Produtos</h2>
+                <p>Selecione um produto e adicione informações específicas de espessura e qualidade.</p>
+                <a href="selecao.html" class="btn">Acessar</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
